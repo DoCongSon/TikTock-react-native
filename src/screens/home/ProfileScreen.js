@@ -10,18 +10,25 @@ const ProfileScreen = ({ navigation }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
   const posts = useSelector((state) => state.post.currentUserPosts);
 
-  console.log(posts);
-
   return (
     <View style={styles.container}>
       <View style={styles.navBarContainer}>
         <IconButton icon='search' size={24} color='black' />
-        <Text style={styles.displayName}>Đỗ Công Sơn</Text>
+        <Text style={styles.displayName}>{currentUser.displayName}</Text>
         <IconButton icon='menu' size={24} color='black' />
       </View>
       <Divider color='gray' size={1} horizontal={20} vertical={10} />
       <View style={styles.profileHeaderContainer}>
-        <Avatar.Text label='Sơn' size={80} />
+        {currentUser.photoURL ? (
+          <Avatar.Image
+            source={{
+              uri: currentUser.photoURL,
+            }}
+            size={80}
+          />
+        ) : (
+          <Avatar.Icon icon='account' size={80} />
+        )}
         <Text style={styles.profileEmail}>{currentUser.email}</Text>
         <View style={styles.counterContainer}>
           <View style={styles.counterItem}>

@@ -130,7 +130,7 @@ const Main = () => {
         <Stack.Screen
           name='EditProfileScreen'
           component={EditProfileScreen}
-          options={{ headerShown: true }}
+          options={{ headerShown: true, title: 'Sửa hồ sơ' }}
         />
         <Stack.Screen
           name='EditFieldScreen'

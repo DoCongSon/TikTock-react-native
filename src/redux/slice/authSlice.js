@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import { doc, getFirestore, onSnapshot, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { getPostsById } from './postSlide';
 
 const initialState = {
@@ -26,7 +27,9 @@ export const authSlice = createSlice({
     builders
       .addCase(login.fulfilled, (state, action) => {})
       .addCase(register.fulfilled, (state, action) => {})
-      .addCase(userAuthStateListener.fulfilled, (state, action) => {});
+      .addCase(userAuthStateListener.fulfilled, (state, action) => {})
+      .addCase(updateAvatar.fulfilled, (state, action) => {})
+      .addCase(updateField.fulfilled, (state, action) => {});
   },
 });
 
@@ -90,6 +93,35 @@ const getCurrentUserState = createAsyncThunk(
     });
   }
 );
+
+export const updateAvatar = createAsyncThunk('auth/updateAvatar', async (source) => {
+  try {
+    const storage = getStorage();
+    const avatarRef = ref(storage, `avatar/${getAuth().currentUser.uid}/avatar`);
+    const response = await fetch(source);
+    const blob = await response.blob();
+    const task = await uploadBytes(avatarRef, blob);
+    const downloadURL = await getDownloadURL(task.ref);
+
+    const db = getFirestore();
+    await updateDoc(doc(db, 'user', getAuth().currentUser.uid), {
+      photoURL: downloadURL,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+export const updateField = createAsyncThunk('auth/updateField', async ({ field, value }) => {
+  try {
+    const db = getFirestore();
+    await updateDoc(doc(db, 'user', getAuth().currentUser.uid), {
+      [field]: value,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export const { userStateChange } = authSlice.actions;
 
