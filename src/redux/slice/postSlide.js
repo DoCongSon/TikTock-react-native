@@ -4,7 +4,6 @@ import {
   collection,
   getFirestore,
   addDoc,
-  serverTimestamp,
   query,
   where,
   onSnapshot,
@@ -62,6 +61,10 @@ export const createPost = createAsyncThunk(
         likesCount: 0,
         commentsCount: 0,
         creation: new Date().toJSON(),
+        safe: {
+          unsafe: false,
+          unsafeReason: null,
+        },
       });
     } catch (error) {
       console.log(error);
@@ -71,8 +74,8 @@ export const createPost = createAsyncThunk(
   }
 );
 
-export const getPostsById = createAsyncThunk(
-  'post/getPostsById',
+export const getPostsByUserId = createAsyncThunk(
+  'post/getPostsByUserId',
   async (id = getAuth().currentUser.uid, { dispatch }) => {
     const db = getFirestore();
     const q = query(

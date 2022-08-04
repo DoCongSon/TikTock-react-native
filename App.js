@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { getApps, initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { store } from './src/redux';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -25,6 +26,8 @@ import SavePostScreen from './src/screens/home/SavePostScreen';
 import LoadingOverlay from './src/components/other/LoadingOverlay';
 import EditProfileScreen from './src/screens/other/EditProfileScreen';
 import EditFieldScreen from './src/screens/other/EditFieldScreen';
+import { StatusBar } from 'react-native';
+import Modal from './src/components/other/Modal';
 
 if (!getApps().length) {
   const firebaseConfig = Constants.manifest.web.config.firebase;
@@ -149,12 +152,25 @@ const Main = () => {
   );
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: false,
+      staleTime: Infinity,
+    },
+  },
+});
+
 export default function App() {
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Main />
-      </NavigationContainer>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar />
+        <NavigationContainer>
+          <Main />
+          <Modal />
+        </NavigationContainer>
+      </QueryClientProvider>
     </Provider>
   );
 }

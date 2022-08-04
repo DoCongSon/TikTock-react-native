@@ -10,8 +10,6 @@ const EditFieldScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   const handlerSave = () => {
-    console.log(field);
-    console.log(inputValue);
     dispatch(updateField({ field: field, value: inputValue }));
     navigation.goBack();
   };

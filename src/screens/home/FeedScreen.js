@@ -1,14 +1,65 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import PostItem from '../../components/post/PostItem';
+import { postsListener } from '../../services/posts';
 
 const FeedScreen = () => {
+  const [posts, setPosts] = useState([]);
+  const mediaRefs = useRef([]);
+
+  useEffect(() => {
+    const unsubscribe = async () => {
+      const unsub = await postsListener(setPosts);
+      return unsub;
+    };
+    const response = unsubscribe();
+    return () => {
+      response.then((unsubscribe) => unsubscribe());
+    };
+  }, []);
+
+  const onViewableVideoChanged = useRef(({ changed }) => {
+    changed.forEach((element) => {
+      const cell = mediaRefs.current[element.key];
+      if (cell) {
+        if (element.isViewable) {
+          cell.play();
+        } else {
+          cell.stop();
+        }
+      }
+    });
+  });
+
   return (
-    <View>
-      <Text>FeedScreen</Text>
+    <View style={styles.container}>
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <PostItem item={item} ref={(postRef) => (mediaRefs.current[item.id] = postRef)} />
+        )}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate='normal'
+        onViewableItemsChanged={onViewableVideoChanged.current}
+        initialNumToRender={0}
+        windowSize={4}
+        maxToRenderPerBatch={2}
+        removeClippedSubviews
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 100,
+        }}
+      />
     </View>
   );
 };
 
 export default FeedScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+});

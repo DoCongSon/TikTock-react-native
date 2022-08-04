@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { doc, getFirestore, onSnapshot, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import { getPostsById } from './postSlide';
+import { getPostsByUserId } from './postSlide';
 
 const initialState = {
   currentUser: null,
@@ -59,7 +59,7 @@ export const register = createAsyncThunk('auth/register', async ({ email, passwo
       // ...
     })
     .catch((error) => {
-      console.log('register successful');
+      console.log('register unsuccessful');
       const errorCode = error.code;
       const errorMessage = error.message;
       // ..
@@ -73,7 +73,7 @@ export const userAuthStateListener = createAsyncThunk(
     onAuthStateChanged(auth, (user) => {
       if (user) {
         dispatch(getCurrentUserState());
-        dispatch(getPostsById());
+        dispatch(getPostsByUserId());
       } else {
         dispatch(userStateChange({ currentUser: null, loaded: true }));
       }

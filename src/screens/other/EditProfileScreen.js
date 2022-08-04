@@ -1,11 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { Avatar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
 import { updateAvatar } from '../../redux/slice/authSlice';
 import { Octicons } from '@expo/vector-icons';
+import Avatar from '../../components/other/Avatar';
 
 const EditProfileScreen = ({ navigation }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -30,16 +30,7 @@ const EditProfileScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <Pressable style={styles.avatar} onPress={handlerUpdateAvatar}>
-          {currentUser.photoURL ? (
-            <Avatar.Image
-              source={{
-                uri: currentUser.photoURL,
-              }}
-              size={100}
-            />
-          ) : (
-            <Avatar.Icon icon='account' size={100} />
-          )}
+          <Avatar size={100} uri={currentUser.photoURL} />
           <View style={styles.avatarOverlay}>
             <Ionicons name='camera-outline' size={24} color='white' />
           </View>

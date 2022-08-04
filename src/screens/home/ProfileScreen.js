@@ -1,10 +1,10 @@
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Avatar } from 'react-native-paper';
 import IconButton from '../../components/button/IconButton';
 import Divider from '../../components/other/Divider';
 import TextIconButton from '../../components/button/TextIconButton';
+import Avatar from '../../components/other/Avatar';
 
 const ProfileScreen = ({ navigation }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -19,16 +19,7 @@ const ProfileScreen = ({ navigation }) => {
       </View>
       <Divider color='gray' size={1} horizontal={20} vertical={10} />
       <View style={styles.profileHeaderContainer}>
-        {currentUser.photoURL ? (
-          <Avatar.Image
-            source={{
-              uri: currentUser.photoURL,
-            }}
-            size={80}
-          />
-        ) : (
-          <Avatar.Icon icon='account' size={80} />
-        )}
+        <Avatar size={80} uri={currentUser.photoURL} />
         <Text style={styles.profileEmail}>{currentUser.email}</Text>
         <View style={styles.counterContainer}>
           <View style={styles.counterItem}>
