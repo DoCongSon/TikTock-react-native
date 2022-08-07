@@ -1,19 +1,30 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
-const BOTTOM_TAB_BAR_HEIGHT = 58;
+
 import { Video, ResizeMode } from 'expo-av';
 import { useUser } from '../../hooks/useUser';
 import PostOverlay from './PostOverlay';
+import { useIsFocused } from '@react-navigation/native';
+import PauseOverlay from './PauseOverlay';
 
-export const PostItem = forwardRef(({ item }, parentRef) => {
+export const PostItem = forwardRef(({ item, bottomBarHeight }, parentRef) => {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const isFocused = useIsFocused();
   const user = useUser(item.creator);
   const videoRef = useRef();
+
   useImperativeHandle(parentRef, () => ({
     play,
     stop,
     unload,
   }));
+
+  useEffect(() => {
+    if (!isFocused) {
+      stop();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     return () => {
@@ -26,6 +37,7 @@ export const PostItem = forwardRef(({ item }, parentRef) => {
       try {
         const status = await videoRef.current.getStatusAsync();
         if (!status.isPlaying) {
+          setIsPlaying(true);
           await videoRef.current.playAsync();
         }
       } catch (error) {
@@ -39,7 +51,7 @@ export const PostItem = forwardRef(({ item }, parentRef) => {
       try {
         const status = await videoRef.current.getStatusAsync();
         if (status.isPlaying) {
-          await videoRef.current.stopAsync();
+          await videoRef?.current?.stopAsync();
         }
       } catch (error) {
         console.log(error);
@@ -55,31 +67,46 @@ export const PostItem = forwardRef(({ item }, parentRef) => {
     }
   };
 
+  const handlerPress = async () => {
+    if (videoRef.current) {
+      try {
+        const status = await videoRef.current.getStatusAsync();
+        if (status.isPlaying) {
+          await videoRef?.current?.pauseAsync();
+          setIsPlaying(false);
+        } else {
+          setIsPlaying(true);
+          await videoRef?.current?.playAsync();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <PostOverlay user={user.data} post={item} />
-      <Video
-        ref={videoRef}
-        source={{ uri: item.source.mediaUrl }}
-        style={styles.video}
-        usePoster
-        posterSource={{ uri: item.source.thumbnailUrl }}
-        posterStyle={{ resizeMode: 'contain', flex: 1 }}
-        resizeMode={ResizeMode.CONTAIN}
-        isLooping
-      />
-    </View>
+    <SafeAreaView>
+      <Pressable
+        style={{
+          height: Dimensions.get('screen').height - bottomBarHeight,
+          flex: 1,
+        }}
+        onPress={handlerPress}>
+        {!isPlaying && <PauseOverlay />}
+        <PostOverlay user={user.data} post={item} />
+        <Video
+          ref={videoRef}
+          source={{ uri: item.source.mediaUrl }}
+          style={{ flex: 1 }}
+          usePoster
+          posterSource={{ uri: item.source.thumbnailUrl }}
+          posterStyle={{ resizeMode: 'contain', flex: 1 }}
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+        />
+      </Pressable>
+    </SafeAreaView>
   );
 });
 
 export default PostItem;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: Dimensions.get('window').height - BOTTOM_TAB_BAR_HEIGHT,
-  },
-  video: {
-    flex: 1,
-  },
-});

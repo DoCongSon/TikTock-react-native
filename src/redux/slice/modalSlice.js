@@ -6,7 +6,7 @@ const initialState = {
   modalType: -1,
 };
 
-export const modalSlide = createSlice({
+export const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
@@ -22,6 +22,6 @@ export const modalSlide = createSlice({
   },
 });
 
-export const { clearModal, modalOpenCommentSection } = modalSlide.actions;
+export const { clearModal, modalOpenCommentSection } = modalSlice.actions;
 
-export default modalSlide.reducer;
+export default modalSlice.reducer;

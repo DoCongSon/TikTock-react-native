@@ -1,3 +1,4 @@
-const USER_KEY = 'user';
-
-export { USER_KEY };
+export const keys = {
+  user: (userId) => ['user', userId],
+  following: (userId, otherUserId) => ['following', userId + otherUserId],
+};

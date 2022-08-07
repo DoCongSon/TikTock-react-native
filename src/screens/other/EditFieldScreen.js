@@ -6,7 +6,7 @@ import { updateField } from '../../redux/slice/authSlice';
 
 const EditFieldScreen = ({ navigation, route }) => {
   const { title, field, value, maxLength } = route.params;
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(value || '');
   const dispatch = useDispatch();
 
   const handlerSave = () => {

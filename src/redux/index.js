@@ -1,12 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './slice/authSlice';
-import modalSlide from './slice/modalSlide';
-import postSlide from './slice/postSlide';
+import chatSlice from './slice/chatSlice';
+import modalSlice from './slice/modalSlice';
+import postSlice from './slice/postSlice';
+import profileSlice from './slice/profileSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authSlice,
-    post: postSlide,
-    modal: modalSlide,
+    chat: chatSlice,
+    modal: modalSlice,
+    post: postSlice,
+    profile: profileSlice,
   },
 });

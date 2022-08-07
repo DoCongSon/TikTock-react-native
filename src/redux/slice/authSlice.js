@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { doc, getFirestore, onSnapshot, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import { getPostsByUserId } from './postSlide';
+import { getPostsByUserId } from './postSlice';
 
 const initialState = {
   currentUser: null,

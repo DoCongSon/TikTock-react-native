@@ -1,18 +1,18 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import PostItem from '../../components/post/PostItem';
-import { postsListener } from '../../services/posts';
+import { postsListenerByUserId } from '../../services/posts';
 import { useDispatch } from 'react-redux';
 import { setProfileUserIdDisplay } from '../../redux/slice/profileSlice';
 
-const FeedScreen = () => {
+const FeedScreen = ({ route }) => {
   const dispatch = useDispatch();
   const [posts, setPosts] = useState([]);
   const mediaRefs = useRef([]);
 
   useEffect(() => {
     const unsubscribe = async () => {
-      const unsub = await postsListener(setPosts);
+      const unsub = await postsListenerByUserId(route.params.userId, setPosts);
       return unsub;
     };
     const response = unsubscribe();
@@ -43,7 +43,7 @@ const FeedScreen = () => {
         renderItem={({ item, index }) => (
           <PostItem
             item={item}
-            bottomBarHeight={54}
+            bottomBarHeight={0}
             ref={(postRef) => (mediaRefs.current[item.id] = postRef)}
           />
         )}

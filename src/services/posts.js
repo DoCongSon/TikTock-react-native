@@ -9,6 +9,7 @@ import {
   addDoc,
   onSnapshot,
   query,
+  where,
 } from 'firebase/firestore';
 
 const postsListener = async (callback) => {
@@ -19,6 +20,33 @@ const postsListener = async (callback) => {
       const posts = [];
       querySnapshot.forEach((doc) => {
         posts.push({ id: doc.id, ...doc.data() });
+      });
+      callback(posts);
+    });
+    return unsubscribe;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const postsListenerByUserId = async (id, callback) => {
+  try {
+    const db = getFirestore();
+    const q = query(
+      collection(db, 'post'),
+      where('creator', '==', id),
+      orderBy('creation', 'desc')
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.exists()) {
+          const post = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          posts.push(post);
+        }
       });
       callback(posts);
     });
@@ -81,4 +109,11 @@ const commentsListener = async (postId, callback) => {
   }
 };
 
-export { postsListener, isUserLikePost, updateUserLikePost, addComment, commentsListener };
+export {
+  postsListener,
+  isUserLikePost,
+  updateUserLikePost,
+  addComment,
+  commentsListener,
+  postsListenerByUserId,
+};

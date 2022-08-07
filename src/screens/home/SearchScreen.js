@@ -2,10 +2,13 @@ import { FlatList, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react
 import React, { useEffect, useState } from 'react';
 import SearchUserItem from '../../components/search/SearchUserItem';
 import { queryUsersByName } from '../../services/search';
+import { useDispatch } from 'react-redux';
+import { setProfileUserIdDisplay } from '../../redux/slice/profileSlice';
 
-const SearchScreen = () => {
+const SearchScreen = ({ navigation }) => {
   const [searchValue, setSearchValue] = useState('');
   const [searchUsers, setSearchUsers] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
@@ -13,6 +16,11 @@ const SearchScreen = () => {
       setSearchUsers(users);
     })();
   }, [searchValue]);
+
+  const handlerChoseUser = (userId) => {
+    dispatch(setProfileUserIdDisplay(userId));
+    navigation.navigate('OtherProfile');
+  };
 
   return (
     <View style={styles.container}>
@@ -27,7 +35,9 @@ const SearchScreen = () => {
         style={styles.searchUserList}
         data={searchUsers}
         keyExtractor={(user) => user.id}
-        renderItem={({ item }) => <SearchUserItem user={item} />}
+        renderItem={({ item }) => (
+          <SearchUserItem user={item} onPress={() => handlerChoseUser(item.id)} />
+        )}
       />
     </View>
   );

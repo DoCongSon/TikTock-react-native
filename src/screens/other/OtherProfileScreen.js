@@ -1,26 +1,23 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import IconButton from '../../components/button/IconButton';
 import Divider from '../../components/other/Divider';
+
 import { useUser } from '../../hooks/useUser';
 import { postsListenerByUserId } from '../../services/posts';
-import ProfilePostItem from '../other/ProfilePostItem';
+import ProfilePostItem from './ProfilePostItem';
 import ProfileHeader from '../../components/other/ProfileHeader';
 
-const ProfileScreen = ({ route }) => {
-  const currentUser = useSelector((state) => state.auth.currentUser);
-  const postList = useSelector((state) => state.post.currentUserPosts);
+const ProfileScreen = ({ navigation }) => {
   const profileUserIdDisplay = useSelector((state) => state.profile.profileUserIdDisplay);
-  const [user, setUser] = useState(currentUser);
-  const [posts, setPosts] = useState(postList);
-  const isCurrentUser = route.params.isCurrentUser;
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
   const userDisplay = useUser(profileUserIdDisplay).data;
 
   useEffect(() => {
     let isMounted = true;
     let unsub = null;
-    if (!isCurrentUser && userDisplay) {
+    if (userDisplay) {
       setUser(userDisplay);
       const fetchPosts = async () => {
         const unsub = await postsListenerByUserId(profileUserIdDisplay, (posts) => {
@@ -39,16 +36,17 @@ const ProfileScreen = ({ route }) => {
         unsub.then((unsubscribe) => unsubscribe());
       }
     };
-  }, [isCurrentUser, userDisplay]);
+  }, [userDisplay]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: user?.displayName,
+      headerTitleAlign: 'center',
+    });
+  }, [user]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.navBarContainer}>
-        <IconButton icon='search' size={24} color='black' />
-        <Text style={styles.displayName}>{user.displayName}</Text>
-        <IconButton icon='menu' size={24} color='black' />
-      </View>
-      <Divider color='gray' size={1} horizontal={20} vertical={10} />
       <ProfileHeader user={user} />
       <Divider color='gray' size={1} />
       <View style={styles.postsContainer}>
@@ -69,7 +67,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 40,
+    marginTop: 30,
   },
   navBarContainer: {
     marginHorizontal: 20,

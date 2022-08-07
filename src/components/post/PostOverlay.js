@@ -4,20 +4,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { throttle } from 'throttle-debounce';
 import { Ionicons } from '@expo/vector-icons';
 import { isUserLikePost, updateUserLikePost } from '../../services/posts';
-import { modalOpenCommentSection } from '../../redux/slice/modalSlide';
+import { modalOpenCommentSection } from '../../redux/slice/modalSlice';
+import { useNavigation } from '@react-navigation/native';
 import Avatar from '../other/Avatar';
+import useAsync from '../../hooks/useAsync';
 
 const PostOverlay = ({ user, post }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
   const [currentLike, setCurrentLike] = useState({ state: false, counter: post.likesCount });
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => {
-      const like = await isUserLikePost(currentUser.uid, post.id);
-      setCurrentLike((pre) => ({ ...pre, state: like }));
-    })();
-  }, []);
+  useAsync(
+    () => isUserLikePost(currentUser.uid, post.id),
+    (like) => setCurrentLike((pre) => ({ ...pre, state: like }))
+  );
 
   const handlerUpdateLike = useMemo(() => {
     return throttle(
@@ -40,7 +41,9 @@ const PostOverlay = ({ user, post }) => {
         <Text style={styles.description}>{post.description}</Text>
       </View>
       <View style={styles.sidebarContainer}>
-        <Pressable onPress={() => {}} style={styles.avatarContainer}>
+        <Pressable
+          onPress={() => navigation.navigate('UserProfile')}
+          style={styles.avatarContainer}>
           <Avatar size={50} uri={user?.photoURL} />
         </Pressable>
         <View style={styles.actionContainer}>

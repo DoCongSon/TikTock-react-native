@@ -2,7 +2,7 @@ import { Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TextIconButton from '../../components/button/TextIconButton';
-import { createPost } from '../../redux/slice/postSlide';
+import { createPost } from '../../redux/slice/postSlice';
 import LoadingOverlay from '../../components/other/LoadingOverlay';
 
 const SavePostScreen = ({ navigation, route }) => {

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../button/IconButton';
 import { addComment, commentsListener } from '../../services/posts';
 import CommentItem from './CommentItem';
-import { clearModal } from '../../redux/slice/modalSlide';
+import { clearModal } from '../../redux/slice/modalSlice';
 import Avatar from './Avatar';
 
 const CommentModal = ({ post }) => {

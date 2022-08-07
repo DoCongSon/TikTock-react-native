@@ -28,21 +28,16 @@ const AddScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      const CameraPermissionsResponse = await getCameraPermissionsAsync();
+      const CameraPermissionsResponse = await requestCameraPermissionsAsync();
       if (CameraPermissionsResponse.granted) {
         setHasPermissionCamera(true);
-      } else {
-        await requestCameraPermissionsAsync();
       }
-
-      const AudioPermissionsResponse = await Audio.getPermissionsAsync();
+      const AudioPermissionsResponse = await Audio.requestPermissionsAsync();
       if (AudioPermissionsResponse.granted) {
         setHasPermissionAudio(true);
-      } else {
-        await Audio.requestPermissionsAsync();
       }
 
-      const LibraryPermissionsResponse = await ImagePicker.getMediaLibraryPermissionsAsync();
+      const LibraryPermissionsResponse = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (LibraryPermissionsResponse.granted) {
         setHasPermissionLibrary(true);
         const userGalleryMedia = await MediaLibrary.getAssetsAsync({
@@ -50,8 +45,6 @@ const AddScreen = ({ navigation }) => {
           mediaType: 'video',
         });
         setGalleryItems(userGalleryMedia.assets);
-      } else {
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
       }
     })();
   }, []);
@@ -122,7 +115,11 @@ const AddScreen = ({ navigation }) => {
   };
 
   if (!hasPermissionAudio || !hasPermissionCamera || !hasPermissionLibrary) {
-    return <View></View>;
+    return (
+      <View>
+        <Text>not has permissions</Text>
+      </View>
+    );
   }
 
   return (

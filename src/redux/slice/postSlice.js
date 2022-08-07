@@ -17,7 +17,7 @@ const initialState = {
   currentUserPosts: [],
 };
 
-export const postSlide = createSlice({
+export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
@@ -99,6 +99,6 @@ export const getPostsByUserId = createAsyncThunk(
   }
 );
 
-export const { changeRequestRunning, currentUserPostUpdate } = postSlide.actions;
+export const { changeRequestRunning, currentUserPostUpdate } = postSlice.actions;
 
-export default postSlide.reducer;
+export default postSlice.reducer;

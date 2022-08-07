@@ -11,8 +11,6 @@ const EditProfileScreen = ({ navigation }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
   const dispatch = useDispatch();
 
-  console.log(currentUser);
-
   const handlerUpdateAvatar = async () => {
     const options = {
       allowsEditing: true,
