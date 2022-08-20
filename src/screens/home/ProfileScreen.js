@@ -1,12 +1,14 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../components/button/IconButton';
 import Divider from '../../components/other/Divider';
 import { useUser } from '../../hooks/useUser';
 import { postsListenerByUserId } from '../../services/posts';
 import ProfilePostItem from '../other/ProfilePostItem';
 import ProfileHeader from '../../components/other/ProfileHeader';
+import { getAuth } from 'firebase/auth';
+import { logout } from '../../redux/slice/authSlice';
 
 const ProfileScreen = ({ route }) => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -16,6 +18,7 @@ const ProfileScreen = ({ route }) => {
   const [posts, setPosts] = useState(postList);
   const isCurrentUser = route.params.isCurrentUser;
   const userDisplay = useUser(profileUserIdDisplay).data;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let isMounted = true;
@@ -44,9 +47,12 @@ const ProfileScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.navBarContainer}>
-        <IconButton icon='search' size={24} color='black' />
         <Text style={styles.displayName}>{user.displayName}</Text>
-        <IconButton icon='menu' size={24} color='black' />
+        {getAuth().currentUser?.uid === user?.uid && (
+          <View style={styles.iconLogout}>
+            <IconButton icon='log-out' size={24} color='black' onPress={() => dispatch(logout())} />
+          </View>
+        )}
       </View>
       <Divider color='gray' size={1} horizontal={20} vertical={10} />
       <ProfileHeader user={user} />
@@ -74,12 +80,16 @@ const styles = StyleSheet.create({
   navBarContainer: {
     marginHorizontal: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   displayName: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  iconLogout: {
+    position: 'absolute',
+    right: 0,
   },
   postsContainer: {
     flex: 1,

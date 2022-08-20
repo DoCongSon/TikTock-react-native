@@ -15,7 +15,7 @@ const chatsListener = async (listener) => {
   try {
     const db = getFirestore();
     const chatsRef = collection(db, 'chats');
-    const q = query(chatsRef, where('members', 'array-contains', getAuth().currentUser.uid));
+    const q = query(chatsRef, where('members', 'array-contains', getAuth().currentUser?.uid));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const chats = [];
       querySnapshot.forEach((doc) => {
@@ -53,7 +53,7 @@ const sendMessage = async (chatId, message) => {
     const messagesRef = collection(db, `chats/${chatId}/messages`);
     const creation = new Date().toJSON();
     await addDoc(messagesRef, {
-      creator: getAuth().currentUser.uid,
+      creator: getAuth().currentUser?.uid,
       creation,
       message,
     });
@@ -73,7 +73,7 @@ const createChat = async (contactId) => {
     const response = await addDoc(chatsRef, {
       lastUpdate: new Date().toJSON(),
       lastMessage: 'Hãy gửi tin nhắn đầu tiên!',
-      members: [getAuth().currentUser.uid, contactId],
+      members: [getAuth().currentUser?.uid, contactId],
     });
     return response.id;
   } catch (error) {

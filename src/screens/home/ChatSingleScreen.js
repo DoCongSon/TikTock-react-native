@@ -1,15 +1,22 @@
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../components/button/IconButton';
 import MessageItem from '../../components/chats/MessageItem';
 import { useMessages } from '../../hooks/useMessages';
 import { sendMessage } from '../../services/chats';
 
-const ChatSingleScreen = ({ route }) => {
+const ChatSingleScreen = ({ route, navigation }) => {
   const [message, setMessage] = useState('');
-  const { chatId, contactId } = route.params;
+  const { chatId, contactId, contactName } = route.params;
   const { messages, chatIdInst } = useMessages(chatId, contactId);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: contactName,
+      headerTitleAlign: 'center',
+    });
+  }, [contactName]);
 
   const handlerMessageSend = async () => {
     if (message.trim() !== '') {
@@ -47,6 +54,7 @@ export default ChatSingleScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F9F5EB',
   },
   headerContainer: {
     flexDirection: 'row',

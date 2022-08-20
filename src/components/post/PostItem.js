@@ -1,4 +1,4 @@
-import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 
@@ -84,11 +84,23 @@ export const PostItem = forwardRef(({ item, bottomBarHeight }, parentRef) => {
     }
   };
 
+  // fix tạm (sửa sau)
+  // -------------------
+  const height = Dimensions.get('screen').height - Dimensions.get('window').height;
+  let itemHeight = Dimensions.get('window').height - bottomBarHeight + 28;
+  if (height < 60 && height >= 30) {
+    itemHeight = Dimensions.get('window').height - bottomBarHeight;
+  }
+  if (itemHeight < 30) {
+    itemHeight = Dimensions.get('screen').height - bottomBarHeight;
+  }
+  // -----------------------
+
   return (
-    <SafeAreaView>
+    <View>
       <Pressable
         style={{
-          height: Dimensions.get('screen').height - bottomBarHeight,
+          height: itemHeight,
           flex: 1,
         }}
         onPress={handlerPress}>
@@ -105,7 +117,7 @@ export const PostItem = forwardRef(({ item, bottomBarHeight }, parentRef) => {
           isLooping
         />
       </Pressable>
-    </SafeAreaView>
+    </View>
   );
 });
 

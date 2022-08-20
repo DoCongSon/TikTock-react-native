@@ -128,12 +128,13 @@ const Main = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
   const loaded = useSelector((state) => state.auth.loaded);
+  const loading = useSelector((state) => state.auth.loading);
 
   useEffect(() => {
     dispatch(userAuthStateListener());
-  }, []);
+  }, [loaded, dispatch]);
 
-  if (!loaded) {
+  if (!loaded || loading) {
     return <LoadingOverlay color='blue' size='large' />;
   }
 

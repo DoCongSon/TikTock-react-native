@@ -1,18 +1,22 @@
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Divider from '../../components/other/Divider';
 
 import { useUser } from '../../hooks/useUser';
 import { postsListenerByUserId } from '../../services/posts';
 import ProfilePostItem from './ProfilePostItem';
 import ProfileHeader from '../../components/other/ProfileHeader';
+import IconButton from '../../components/button/IconButton';
+import { getAuth } from 'firebase/auth';
+import { logout } from '../../redux/slice/authSlice';
 
 const ProfileScreen = ({ navigation }) => {
   const profileUserIdDisplay = useSelector((state) => state.profile.profileUserIdDisplay);
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const userDisplay = useUser(profileUserIdDisplay).data;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let isMounted = true;
@@ -42,6 +46,20 @@ const ProfileScreen = ({ navigation }) => {
     navigation.setOptions({
       title: user?.displayName,
       headerTitleAlign: 'center',
+      headerRight: () => {
+        if (getAuth().currentUser?.uid === user?.uid) {
+          return (
+            <View style={{ marginRight: 10 }}>
+              <IconButton
+                icon='log-out'
+                size={24}
+                color='black'
+                onPress={() => dispatch(logout())}
+              />
+            </View>
+          );
+        } else return null;
+      },
     });
   }, [user]);
 

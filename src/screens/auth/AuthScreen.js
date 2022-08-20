@@ -2,15 +2,19 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AuthMenu from '../../components/auth/AuthMenu';
 import AuthHeader from '../../components/auth/AuthHeader';
+import { useIsFocused } from '@react-navigation/native';
 
 const AuthScreen = ({ navigation }) => {
   const [isSignIn, setIsSignIn] = useState(true);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    navigation.setOptions({
-      title: isSignIn ? 'Đăng nhập' : 'Đăng ký',
-    });
-  }, [isSignIn]);
+    if (isFocused) {
+      navigation.setOptions({
+        title: isSignIn ? 'Đăng nhập' : 'Đăng ký',
+      });
+    }
+  }, [isSignIn, isFocused]);
 
   const title = isSignIn ? 'Đăng nhập vào TikTok' : 'Đăng ký TikTok';
   const subtitle = isSignIn

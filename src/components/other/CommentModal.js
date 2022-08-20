@@ -15,7 +15,7 @@ const CommentModal = ({ post }) => {
 
   const handlerCommentSend = () => {
     if (comment.trim() !== '') {
-      addComment(post.id, currentUser.uid, comment);
+      addComment(post.id, currentUser?.uid, comment);
       setComment('');
     }
   };

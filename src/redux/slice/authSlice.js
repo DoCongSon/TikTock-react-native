@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  signOut,
 } from 'firebase/auth';
 import { doc, getFirestore, onSnapshot, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -12,6 +13,7 @@ import { getPostsByUserId } from './postSlice';
 const initialState = {
   currentUser: null,
   loaded: false,
+  loading: false,
 };
 
 export const authSlice = createSlice({
@@ -21,6 +23,9 @@ export const authSlice = createSlice({
     userStateChange: (state, action) => {
       state.currentUser = action.payload.currentUser;
       state.loaded = action.payload.loaded;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
   },
   extraReducers: (builders) => {
@@ -33,7 +38,8 @@ export const authSlice = createSlice({
   },
 });
 
-export const login = createAsyncThunk('auth/login', async ({ email, password }) => {
+export const login = createAsyncThunk('auth/login', async ({ email, password }, { dispatch }) => {
+  dispatch(setLoading(true));
   const auth = getAuth();
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -44,25 +50,39 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }) 
     })
     .catch((error) => {
       console.log('sign in unsuccessful');
-      const errorCode = error.code;
-      const errorMessage = error.message;
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
     });
 });
 
-export const register = createAsyncThunk('auth/register', async ({ email, password }) => {
+export const register = createAsyncThunk(
+  'auth/register',
+  async ({ email, password }, { dispatch }) => {
+    dispatch(setLoading(true));
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('register successful');
+      })
+      .catch((error) => {
+        console.log('register unsuccessful');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  }
+);
+
+export const logout = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
+  dispatch(setLoading(true));
   const auth = getAuth();
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in
-      console.log('register successful');
-      const user = userCredential.user;
-      // ...
+  signOut(auth)
+    .then(() => {
+      dispatch(userStateChange(initialState));
     })
-    .catch((error) => {
-      console.log('register unsuccessful');
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ..
+    .finally(() => {
+      dispatch(setLoading(false));
     });
 });
 
@@ -86,7 +106,7 @@ const getCurrentUserState = createAsyncThunk(
   async (_, { dispatch }) => {
     const auth = getAuth();
     const db = getFirestore();
-    onSnapshot(doc(db, 'user', auth.currentUser.uid), (doc) => {
+    onSnapshot(doc(db, 'user', auth.currentUser?.uid), (doc) => {
       if (doc.exists()) {
         dispatch(userStateChange({ currentUser: doc.data(), loaded: true }));
       }
@@ -97,14 +117,14 @@ const getCurrentUserState = createAsyncThunk(
 export const updateAvatar = createAsyncThunk('auth/updateAvatar', async (source) => {
   try {
     const storage = getStorage();
-    const avatarRef = ref(storage, `avatar/${getAuth().currentUser.uid}/avatar`);
+    const avatarRef = ref(storage, `avatar/${getAuth().currentUser?.uid}/avatar`);
     const response = await fetch(source);
     const blob = await response.blob();
     const task = await uploadBytes(avatarRef, blob);
     const downloadURL = await getDownloadURL(task.ref);
 
     const db = getFirestore();
-    await updateDoc(doc(db, 'user', getAuth().currentUser.uid), {
+    await updateDoc(doc(db, 'user', getAuth().currentUser?.uid), {
       photoURL: downloadURL,
     });
   } catch (error) {
@@ -115,7 +135,7 @@ export const updateAvatar = createAsyncThunk('auth/updateAvatar', async (source)
 export const updateField = createAsyncThunk('auth/updateField', async ({ field, value }) => {
   try {
     const db = getFirestore();
-    await updateDoc(doc(db, 'user', getAuth().currentUser.uid), {
+    await updateDoc(doc(db, 'user', getAuth().currentUser?.uid), {
       [field]: value,
     });
   } catch (error) {
@@ -123,6 +143,6 @@ export const updateField = createAsyncThunk('auth/updateField', async ({ field, 
   }
 });
 
-export const { userStateChange } = authSlice.actions;
+export const { userStateChange, setLoading } = authSlice.actions;
 
 export default authSlice.reducer;

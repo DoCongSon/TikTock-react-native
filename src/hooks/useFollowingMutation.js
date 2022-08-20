@@ -9,17 +9,11 @@ const useFollowingMutation = (options = {}) => {
     ...options,
     onMutate: (variables) => {
       queryClient.setQueryData(
-        keys.following(getAuth().currentUser.uid, variables.otherUserId),
+        keys.following(getAuth().currentUser?.uid, variables.otherUserId),
         !variables.isFollowing
       );
     },
   });
-
-  // return useQuery(
-  //   keys.following(userId, otherUserId),
-  //   () => getIsUserFollowing(userId, otherUserId),
-  //   options
-  // );
 };
 
 export { useFollowingMutation };

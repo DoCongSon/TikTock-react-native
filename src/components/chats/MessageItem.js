@@ -6,7 +6,7 @@ import Avatar from '../other/Avatar';
 
 const MessageItem = ({ data }) => {
   const { data: userData, isLoading } = useUser(data.creator);
-  const isCurrentUser = data.creator === getAuth().currentUser.uid;
+  const isCurrentUser = data.creator === getAuth().currentUser?.uid;
   if (isLoading) {
     return <View />;
   }
@@ -14,8 +14,8 @@ const MessageItem = ({ data }) => {
   return (
     <View style={[styles.container, isCurrentUser && styles.currentUserContainer]}>
       <Avatar size={40} uri={userData.photoURL} />
-      <View style={isCurrentUser ? styles.infoContainer : styles.infoCurrentContainer}>
-        <Text>{data.message}</Text>
+      <View style={[styles.infoContainer, isCurrentUser && styles.infoCurrentContainer]}>
+        <Text style={[styles.message, isCurrentUser && styles.currentMessage]}>{data.message}</Text>
       </View>
     </View>
   );
@@ -34,6 +34,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   infoContainer: {
-    marginLeft: 10,
+    marginHorizontal: 5,
+    backgroundColor: '#FFE9AE',
+    padding: 10,
+    borderRadius: 10,
+    maxWidth: '75%',
+  },
+  infoCurrentContainer: {
+    backgroundColor: '#FFB4B4',
+  },
+  message: {
+    fontSize: 16,
+    color: '#1F4690',
+  },
+  currentMessage: {
+    textAlign: 'right',
+    color: '#610C63',
   },
 });

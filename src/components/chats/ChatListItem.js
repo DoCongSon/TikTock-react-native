@@ -6,7 +6,7 @@ import Avatar from '../other/Avatar';
 import { useNavigation } from '@react-navigation/native';
 
 const ChatListItem = ({ chat }) => {
-  const currentUserId = getAuth().currentUser.uid;
+  const currentUserId = getAuth().currentUser?.uid;
   const { data: userData } = useUser(
     chat.members[0] === currentUserId ? chat.members[1] : chat.members[0]
   );
@@ -14,20 +14,23 @@ const ChatListItem = ({ chat }) => {
 
   return (
     <Pressable
-      onPress={() => navigation.navigate('ChatSingleScreen', { chatId: chat.id })}
+      onPress={() =>
+        navigation.navigate('ChatSingleScreen', {
+          chatId: chat.id,
+          contactName: userData?.displayName,
+        })
+      }
       style={({ pressed }) => [styles.container, pressed && { opacity: 0.5 }]}>
       <Avatar size={50} uri={userData?.photoURL} />
       <View style={styles.contentContainer}>
         <Text style={styles.displayName}>{userData?.displayName}</Text>
         <View style={styles.info}>
           <Text style={styles.chatMessage}>
-            {chat.lastMessage.length >= 15
-              ? chat.lastMessage.slice(0, 12) + '...'
+            {chat.lastMessage.length >= 20
+              ? chat.lastMessage.slice(0, 17) + '...'
               : chat.lastMessage}
           </Text>
-          <Text style={styles.time}>
-            {chat.lastUpdate.slice(0, 10) + '-' + chat.lastUpdate.slice(11, 19)}
-          </Text>
+          <Text style={styles.time}>{chat.lastUpdate.slice(0, 10)}</Text>
         </View>
       </View>
     </Pressable>
@@ -51,6 +54,7 @@ const styles = StyleSheet.create({
   info: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   displayName: {
     fontSize: 18,
@@ -61,5 +65,7 @@ const styles = StyleSheet.create({
   },
   time: {
     color: 'gray',
+    marginRight: 5,
+    fontSize: 12,
   },
 });

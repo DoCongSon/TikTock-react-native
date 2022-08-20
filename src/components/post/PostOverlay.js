@@ -16,7 +16,7 @@ const PostOverlay = ({ user, post }) => {
   const navigation = useNavigation();
 
   useAsync(
-    () => isUserLikePost(currentUser.uid, post.id),
+    () => isUserLikePost(currentUser?.uid, post.id),
     (like) => setCurrentLike((pre) => ({ ...pre, state: like }))
   );
 
@@ -28,7 +28,7 @@ const PostOverlay = ({ user, post }) => {
           state: !pre.state,
           counter: pre.state ? pre.counter - 1 : pre.counter + 1,
         }));
-        await updateUserLikePost(currentUser.uid, post.id, currentLikeState);
+        await updateUserLikePost(currentUser?.uid, post.id, currentLikeState);
       },
       { noTrailing: true }
     );

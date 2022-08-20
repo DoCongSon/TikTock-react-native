@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 
-const AuthIem = ({ title, icon, onPress }) => {
+const AuthItem = ({ title, icon, onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.content}>
@@ -12,7 +12,7 @@ const AuthIem = ({ title, icon, onPress }) => {
   );
 };
 
-export default AuthIem;
+export default AuthItem;
 
 const styles = StyleSheet.create({
   container: {

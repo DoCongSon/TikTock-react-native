@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import AuthForm from '../../components/auth/AuthForm';
 
 const AuthEmailScreen = ({ route, navigation }) => {

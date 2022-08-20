@@ -29,7 +29,7 @@ const getIsUserFollowing = async (userId, otherUserId) => {
 const changeFollowingState = async ({ otherUserId, isFollowing }) => {
   try {
     const db = getFirestore();
-    const userId = getAuth().currentUser.uid;
+    const userId = getAuth().currentUser?.uid;
     if (isFollowing) {
       await deleteDoc(doc(db, `user/${userId}/following`, otherUserId));
     } else {

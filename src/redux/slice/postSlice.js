@@ -41,13 +41,13 @@ export const createPost = createAsyncThunk(
       const randomId = uuid();
       const storage = getStorage();
 
-      const mediaRef = ref(storage, `post/${getAuth().currentUser.uid}/${randomId}/video`);
+      const mediaRef = ref(storage, `post/${getAuth().currentUser?.uid}/${randomId}/video`);
       const responseMedia = await fetch(media);
       const blobMedia = await responseMedia.blob();
       const taskMedia = await uploadBytes(mediaRef, blobMedia);
       const mediaUrl = await getDownloadURL(taskMedia.ref);
 
-      const thumbnailRef = ref(storage, `post/${getAuth().currentUser.uid}/${randomId}/thumbnail`);
+      const thumbnailRef = ref(storage, `post/${getAuth().currentUser?.uid}/${randomId}/thumbnail`);
       const responseThumbnail = await fetch(thumbnail);
       const blobThumbnail = await responseThumbnail.blob();
       const taskThumbnail = await uploadBytes(thumbnailRef, blobThumbnail);
@@ -55,7 +55,7 @@ export const createPost = createAsyncThunk(
 
       const db = getFirestore();
       await addDoc(collection(db, 'post'), {
-        creator: getAuth().currentUser.uid,
+        creator: getAuth().currentUser?.uid,
         source: { mediaUrl, thumbnailUrl },
         description,
         likesCount: 0,
@@ -76,7 +76,7 @@ export const createPost = createAsyncThunk(
 
 export const getPostsByUserId = createAsyncThunk(
   'post/getPostsByUserId',
-  async (id = getAuth().currentUser.uid, { dispatch }) => {
+  async (id = getAuth().currentUser?.uid, { dispatch }) => {
     const db = getFirestore();
     const q = query(
       collection(db, 'post'),

@@ -10,9 +10,9 @@ import { useFollowingMutation } from '../../hooks/useFollowingMutation';
 
 const ProfileHeader = ({ user }) => {
   const navigation = useNavigation();
-  const userIsFollowing = useFollowing(getAuth().currentUser.uid, user?.uid).data;
+  const userIsFollowing = useFollowing(getAuth().currentUser?.uid, user?.uid).data;
   const userIsFollowingMutation = useFollowingMutation();
-  const isCurrentUser = getAuth().currentUser.uid === user?.uid;
+  const isCurrentUser = getAuth().currentUser?.uid === user?.uid;
 
   return (
     <View style={styles.profileHeaderContainer}>
@@ -63,7 +63,12 @@ const Follow = ({ isFollowed, onChange, user, navigation }) => {
         <View style={styles.followedButtonContainer}>
           <TextIconButton
             title='Nhắn tin'
-            onPress={() => navigation.navigate('ChatSingleScreen', { contactId: user.uid })}
+            onPress={() =>
+              navigation.navigate('ChatSingleScreen', {
+                contactId: user.uid,
+                contactName: user.displayName,
+              })
+            }
           />
           <Pressable
             onPress={onChange}

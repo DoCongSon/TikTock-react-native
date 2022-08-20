@@ -14,10 +14,12 @@ const SavePostScreen = ({ navigation, route }) => {
     dispatch(
       createPost({ media: route.params.source, description, thumbnail: route.params.thumbnail })
     );
-    // code ngu !!! sẽ sửa sau
+    // fix tạm (sửa sau)
+    // ---------------
     setTimeout(() => {
       navigation.navigate('FeedScreen');
     }, 3000);
+    // ---------------
   };
 
   if (requestRunning) {
